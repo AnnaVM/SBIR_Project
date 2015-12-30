@@ -5,6 +5,9 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import NMF
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.svm import SVC
+
 from sklearn.preprocessing import StandardScaler
 
 ############### UTILITIES
@@ -136,14 +139,38 @@ class Model():
         self.LogReg_ytrain = train_df[self.list_columns[-1]].values
         self.LogReg_ytest = test_df[self.list_columns[-1]].values
 
-    def perform_LogReg(self, penalty='l1'):
-        model_LogReg = LogisticRegression(penalty=penalty)
+    def perform_LogReg(self, penalty='l2', C=1.0):
+        model_LogReg = LogisticRegression(penalty=penalty, C=C)
         model_LogReg.fit(self.LogReg_Xtrain, self.LogReg_ytrain)
 
         score_train = model_LogReg.score(self.LogReg_Xtrain, self.LogReg_ytrain)
         score_test = model_LogReg.score(self.LogReg_Xtest, self.LogReg_ytest)
         self.model_LogReg = model_LogReg
         return score_train, self.get_base_score(), score_test
+
+    def perform_RandomForest(self, n_estimators=10, max_depth=None):
+        '''
+        random forest predictions with LogReg prepared Data
+        '''
+        model_RF = RandomForestClassifier(n_estimators=n_estimators,
+                                          max_depth=max_depth)
+        model_RF.fit(self.LogReg_Xtrain, self.LogReg_ytrain)
+        self.model_RF = model_RF
+
+    def perform_GradientBoosting(self, n_estimators=10, learning_rate=0.1):
+        '''
+        Gradient Boosting predictions with LogReg prepared Data
+        '''
+        model_GB = GradientBoostingClassifier(n_estimators=n_estimators,
+                                          learning_rate=learning_rate)
+        model_GB.fit(self.LogReg_Xtrain, self.LogReg_ytrain)
+        self.model_GB = model_GB
+
+    def perform_SVM(self,C=1.0, probability=False):
+        model_SVM = SVC(C=C, kernel='rbf', probability=probability)
+        model_SVM.fit(self.LogReg_Xtrain, self.LogReg_ytrain)
+        self.model_SVM = model_SVM
+
 
     def get_base_score(self):
         p_s_train = \
