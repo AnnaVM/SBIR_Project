@@ -1,7 +1,7 @@
 from flask import Flask, request,\
         render_template, flash, redirect, make_response, send_file, session
 import sys
-sys.path.append('../code')
+sys.path.append('./code')
 import cPickle as pickle
 import pandas as pd
 
@@ -101,11 +101,11 @@ def predictions():
                              u'Abstract': session["Abstract"],
                              u'to_phase_II': 'not used'})
 
-    model_form = Model(input_df, [0], [0])
-    model_form.process_text('Abstract')
-    model_form.prepare_LogReg()
+    pred = get_prediction(input_df, tfidf_vectorizer, model_NMF, list_columns,
+                        scaler, model)
 
     return render_template('predictions.html',
+                            prediction=pred,
                             name=session['Company Name'],
                             year=session['Solicitation Year'],
                             award=session['Award Amount'],
@@ -119,7 +119,10 @@ def predictions():
 if __name__ == '__main__':
 
     model = pickle.load(open('data/model.pkl', 'rb'))
+    tfidf_vectorizer = pickle.load(open('data/tfidf_vectorizer.pkl', 'rb'))
+    model_NMF = pickle.load(open('data/NMF.pkl', 'rb'))
     scaler = pickle.load(open('data/scaler.pkl', 'rb'))
+    list_columns = pickle.load(open('data/list_columns.pkl', 'rb'))
 
     app.secret_key = 'super secret key'
     app.run(host='0.0.0.0', port=8080, debug=True)

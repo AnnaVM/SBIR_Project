@@ -1,0 +1,26 @@
+(lp1
+S'topic 4'
+p2
+aS'topic 3'
+p3
+aS'topic 2'
+p4
+aS'topic 1'
+p5
+aS'topic 0'
+p6
+aS'Solicitation Year'
+p7
+aS'Award Amount'
+p8
+aS'Hubzone Owned as_int'
+p9
+aS'Socially and Economically Disadvantaged as_int'
+p10
+aS'Woman Owned as_int'
+p11
+aS'# Employees'
+p12
+aS'Abstract Length'
+p13
+a.
