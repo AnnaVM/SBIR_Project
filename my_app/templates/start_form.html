@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<form role="form" action="/predictions" method='POST'>
+
+  <fieldset class="form-group">
+    <label>Company Name</label>
+    <input type="name" name="Company Name" class="form-control" id="company_name" placeholder="Enter company name">
+  </fieldset>
+
+  <fieldset class="form-group">
+    <label>Solicitation year</label>
+    <input type="year" name="Solicitation Year" class="form-control" id="solicitation_year" placeholder="Enter solicitation year if relevant">
+  </fieldset>
+
+  <fieldset class="form-group">
+    <label>Award Amount for Phase I</label>
+    <input type="award_amount" name="Award Amount" class="form-control" id="award_amount" placeholder="Enter amount awarded in phase I">
+  </fieldset>
+
+  <fieldset class="form-group">
+    <label for="agency">Select Agency</label>
+    <select class="form-control" id="selected_agency" name="Agency">
+      {% for agency in agencies %}
+      <option>{{agency}}</option>
+      {% endfor %}
+    </select>
+  </fieldset>
+
+  <fieldset class="form-group">
+    <label for="AbstractArea">Phase I Abstract</label>
+    <textarea class="form-control" id="abstract_text" name="Abstract" rows="3" placeholder="Enter abstract"></textarea>
+  </fieldset>
+
+  <div class="checkbox">
+    {%for num, owner in ownership %}
+    <label>
+      <input name={{num}} type="checkbox"> {{owner}}
+    </label>
+    {% endfor %}
+  </div>
+
+  <fieldset class="form-group">
+    <label>Number of employees</label>
+    <input type="employees" name="Employees" class="form-control" id="employees" placeholder="Enter number of employees">
+  </fieldset>
+
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+{% endblock %}
