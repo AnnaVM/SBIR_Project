@@ -1,15 +1,54 @@
 {% extends "base.html" %}
 {% block content %}
 
-this is the prediction: {{prediction}}
+<h2>Ratings</h2>
+We scored your application.
 
-<p>for</p> Company {{name}}, in agency
+<div class="rating-container rating-gly-star" data-content="">
+  <div class="rating-stars" data-content="" style="width: 80%;">
+  </div>
+  <input id="input-1" class="rating form-control hide" data-min="0" data-max="5" data-step="1">
+</div>
+
+{% for star in full %}
+<img src="static/full_star.png" alt="full star" style="width:50px;heigth:50px">
+{% endfor %}
+{% if half %}
+<img src="static/half_star.png" alt="half star" style="width:50px;heigth:50px">
+{% endif %}
+{% for star in empty %}
+<img src="static/empty_star.png" alt="empty star" style="width:50px;heigth:50px">
+{% endfor %}
+
+<div>
+  <font size=3>
+    {{success}}% of applications with scores similar to yours successfully obtained a phase II
+  </font>
+</div>
+
+<div>
+  <font size=2>
+  for your information, your success probability is: {{ prediction }}
+</font>
+</div>
+
+<div>
+  <a class="btn btn-default" href=/get_data> Go see more prediction analytics</a>
+</div>
+
+<div>
+  <h3>Entered information</h3>
+<p>for Company {{name}}</p>
+funding request submitted to:
 {{agency}}
-{{employee}}
-{{abstract}}
 
+<p>abstract: </p> {{abstract}}
+
+<p> # of employees: {{employee}} </p>
 <p> Hub: {{owner1}} </p>
 <p> Disadvantaged: {{owner2}} </p>
 <p> Woman: {{owner3}} </p>
+
+</div>
 
 {% endblock %}

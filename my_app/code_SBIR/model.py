@@ -6,6 +6,9 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import NMF
 
+#SMOTE (synthetic minority oversampling technics)
+from unbalanced_dataset import SMOTE
+
 #scaling features
 from sklearn.preprocessing import StandardScaler
 
@@ -50,6 +53,7 @@ class Model():
      - updated: training and testing datasets
 
      from prepare_data
+     - SMOTE if wanted
      - scaler (self.scaler)
      - to train models: self.train_features, self.train_labels
      - to test models: self.test_features, self.test_labels
@@ -190,10 +194,10 @@ dtype='object')
 
 ##########
 
-    def prepare_data(self):
+    def prepare_data(self, smote_option=False):
         '''
         meant to call feature_engineering on training and testing datasets,
-        followed by scaling
+        followed by optional SMOTE, then scaling
         Class Attributes:
         -----------------
         self.train_features
@@ -205,12 +209,18 @@ dtype='object')
         '''
         feature_engineering(self.train_data, self.model_NMF, training=True,
                             list_columns=self.list_columns)
+
         self.perform_scaling()
         train_df = self.train_data[self.list_columns]
 
         self.train_features = \
                 self.scaler.transform(train_df[self.list_columns[:-1]].values)
         self.train_labels = train_df[self.list_columns[-1]].values
+
+
+        if smote_option:
+            self.smote = SMOTE(ratio=0.6, verbose=False, kind='regular')
+            self.train_features, self.train_labels = self.smote.fit_transform(self.train_features, self.train_labels)
 
         feature_engineering(self.test_data, self.model_NMF)
         test_df = self.test_data[self.list_columns]

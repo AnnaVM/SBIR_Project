@@ -1,11 +1,12 @@
 from flask import Flask, request,\
         render_template, flash, redirect, make_response, send_file, session
-import sys
-sys.path.append('./code')
+
 import cPickle as pickle
 import pandas as pd
+import numpy as np
 
-from model import Model
+from code_SBIR.get_prediction import get_prediction
+from code_SBIR.app_utilities import get_stars
 
 app = Flask(__name__)
 
@@ -59,7 +60,7 @@ def predictions():
             session[i] = 'Yes'
 
     #making a dataframe with it:
-    input_df = pd.DataFrame({u'index': 'not used',
+    input_df = pd.DataFrame({u'index': ['not used'],
                              u'Company': session['Company Name'],
                              u'Award Title': 'not used',
                              u'Agency': session["Agency"],
@@ -101,11 +102,21 @@ def predictions():
                              u'Abstract': session["Abstract"],
                              u'to_phase_II': 'not used'})
 
+    #running the model on the data given by user
     pred = get_prediction(input_df, tfidf_vectorizer, model_NMF, list_columns,
                         scaler, model)
+    #getting the score in stars
+    percentile, full, half, empty = get_stars(pred, list_percentiles)
+
+    #getting the success rate of your group:
+    success = round(list_success_rates[percentile-1]*100,2)
 
     return render_template('predictions.html',
                             prediction=pred,
+                            half=half,
+                            full=full,
+                            empty=empty,
+                            success=success,
                             name=session['Company Name'],
                             year=session['Solicitation Year'],
                             award=session['Award Amount'],
@@ -123,6 +134,8 @@ if __name__ == '__main__':
     model_NMF = pickle.load(open('data/NMF.pkl', 'rb'))
     scaler = pickle.load(open('data/scaler.pkl', 'rb'))
     list_columns = pickle.load(open('data/list_columns.pkl', 'rb'))
+    list_percentiles = pickle.load(open('data/list_percentiles.pkl', 'rb'))
+    list_success_rates = pickle.load(open('data/percentage_success.pkl', 'rb'))
 
     app.secret_key = 'super secret key'
     app.run(host='0.0.0.0', port=8080, debug=True)
